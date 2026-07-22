@@ -3,24 +3,51 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import { umkmData } from "@/data/umkm";
+import { umkmData as initialUMKMData, UMKM } from "@/data/umkm";
 
 export default function AdminPage() {
-  const [showToast, setShowToast] = useState(false);
-  const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("umkm");
-
-  const filteredUMKM = umkmData.filter(
-    (u) =>
-      u.nama.toLowerCase().includes(search.toLowerCase()) ||
-      u.pemilik.toLowerCase().includes(search.toLowerCase()) ||
-      u.alamat.toLowerCase().includes(search.toLowerCase())
+  const [umkmList, setUmkmList] = useState<(UMKM & { statusAcc?: 'Aktif' | 'Pending' })[]>(
+    initialUMKMData.map((u, i) => ({
+      ...u,
+      statusAcc: i === 0 || i === 1 || i === 2 || i === 3 ? 'Aktif' : i % 2 === 0 ? 'Aktif' : 'Pending',
+    }))
   );
 
-  const handleAction = () => {
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"Semua" | "Aktif" | "Pending">("Semua");
+  const [activeTab, setActiveTab] = useState("umkm");
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 4000);
   };
+
+  const handleApprove = (id: string, nama: string) => {
+    setUmkmList((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, statusAcc: "Aktif" } : item))
+    );
+    triggerToast(`UMKM "${nama}" telah di-ACC & resmi terbit di Katalog Publik!`);
+  };
+
+  const handleReject = (id: string, nama: string) => {
+    setUmkmList((prev) => prev.filter((item) => item.id !== id));
+    triggerToast(`Pendaftaran UMKM "${nama}" ditolak.`);
+  };
+
+  const filteredUMKM = umkmList.filter((u) => {
+    const matchesSearch =
+      u.nama.toLowerCase().includes(search.toLowerCase()) ||
+      u.pemilik.toLowerCase().includes(search.toLowerCase()) ||
+      u.alamat.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "Semua" || u.statusAcc === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const pendingCount = umkmList.filter((u) => u.statusAcc === "Pending").length;
+  const aktifCount = umkmList.filter((u) => u.statusAcc === "Aktif").length;
 
   return (
     <div className={styles.adminLayout}>
@@ -44,7 +71,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab("umkm")}
           >
             <span className="material-symbols-outlined">storefront</span>
-            <span>Data UMKM Desa</span>
+            <span>Verifikasi UMKM {pendingCount > 0 && `(${pendingCount})`}</span>
           </button>
           <button
             className={`${styles.navItem} ${activeTab === "settings" ? styles.active : ""}`}
@@ -58,7 +85,7 @@ export default function AdminPage() {
         <div className={styles.sidebarFooter}>
           <Link href="/daftar" className={styles.navItem}>
             <span className="material-symbols-outlined">add_circle</span>
-            <span>Tambah Data UMKM</span>
+            <span>Form Pendaftaran</span>
           </Link>
           <div className={styles.userProfile}>
             <div className={styles.avatar}>
@@ -79,9 +106,9 @@ export default function AdminPage() {
         {/* HEADER SECTION */}
         <header className={styles.header}>
           <div>
-            <h2 className={styles.pageTitle}>Manajemen Data UMKM Desa Winong</h2>
+            <h2 className={styles.pageTitle}>Panel Verifikasi & Data UMKM</h2>
             <p className={styles.pageSub}>
-              Pendataan unit usaha mikro, kecil, dan menengah di Kecamatan Gemarang, Kab. Madiun.
+              Verifikasi keaslian pendaftaran warga Desa Winong sebelum diterbitkan di Katalog Publik.
             </p>
           </div>
           <Link href="/daftar" className="btn btn-primary btn-pill">
@@ -95,41 +122,68 @@ export default function AdminPage() {
           <div className={`glass-card ${styles.statCard} ${styles.borderPrimary}`}>
             <div className={styles.statCardTop}>
               <div className={`${styles.iconWrap} ${styles.iconPrimary}`}>
-                <span className="material-symbols-outlined">groups</span>
+                <span className="material-symbols-outlined">verified</span>
               </div>
-              <span className={`${styles.badge} ${styles.badgePrimary}`}>+12%</span>
+              <span className={`${styles.badge} ${styles.badgePrimary}`}>Terbit</span>
             </div>
-            <p className={styles.statLabel}>Total UMKM Terdaftar</p>
-            <p className={styles.statValue}>148 Unit</p>
+            <p className={styles.statLabel}>UMKM Aktif (Terverifikasi)</p>
+            <p className={styles.statValue}>{aktifCount} Unit</p>
           </div>
 
           <div className={`glass-card ${styles.statCard} ${styles.borderSecondary}`}>
             <div className={styles.statCardTop}>
               <div className={`${styles.iconWrap} ${styles.iconSecondary}`}>
-                <span className="material-symbols-outlined">verified</span>
+                <span className="material-symbols-outlined">pending_actions</span>
               </div>
-              <span className={`${styles.badge} ${styles.badgeSecondary}`}>85%</span>
+              <span className={`${styles.badge} ${styles.badgeSecondary}`}>Perlu ACC</span>
             </div>
-            <p className={styles.statLabel}>Memiliki NIB</p>
-            <p className={styles.statValue}>126 UMKM</p>
+            <p className={styles.statLabel}>Pendaftaran Pending</p>
+            <p className={styles.statValue}>{pendingCount} Permohonan</p>
           </div>
 
           <div className={`glass-card ${styles.statCard} ${styles.borderTertiary}`}>
             <div className={styles.statCardTop}>
               <div className={`${styles.iconWrap} ${styles.iconTertiary}`}>
-                <span className="material-symbols-outlined">visibility</span>
+                <span className="material-symbols-outlined">domain</span>
               </div>
-              <span className={`${styles.badge} ${styles.badgeTertiary}`}>+28%</span>
+              <span className={`${styles.badge} ${styles.badgeTertiary}`}>Legalitas</span>
             </div>
-            <p className={styles.statLabel}>Kunjungan Profil Bulan Ini</p>
-            <p className={styles.statValue}>8.432 Kali</p>
+            <p className={styles.statLabel}>Memiliki NIB</p>
+            <p className={styles.statValue}>126 UMKM</p>
           </div>
         </section>
 
-        {/* TABLE SECTION (Matching Word Document Format) */}
+        {/* TABLE SECTION (Matching Word Document Format + Approval Actions) */}
         <section className={styles.tableCard}>
           <div className={styles.tableHeader}>
-            <h3 className={styles.tableTitle}>Data Master UMKM (Desa Winong)</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <h3 className={styles.tableTitle}>Daftar Verifikasi UMKM</h3>
+              {/* STATUS FILTER BUTTONS */}
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  className={`btn ${statusFilter === "Semua" ? "btn-primary" : "btn-outline"}`}
+                  style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}
+                  onClick={() => setStatusFilter("Semua")}
+                >
+                  Semua
+                </button>
+                <button
+                  className={`btn ${statusFilter === "Pending" ? "btn-primary" : "btn-outline"}`}
+                  style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}
+                  onClick={() => setStatusFilter("Pending")}
+                >
+                  Pending ({pendingCount})
+                </button>
+                <button
+                  className={`btn ${statusFilter === "Aktif" ? "btn-primary" : "btn-outline"}`}
+                  style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}
+                  onClick={() => setStatusFilter("Aktif")}
+                >
+                  Aktif ({aktifCount})
+                </button>
+              </div>
+            </div>
+
             <div className={styles.searchWrapper}>
               <span className={`material-symbols-outlined ${styles.searchIcon}`}>search</span>
               <input
@@ -146,13 +200,13 @@ export default function AdminPage() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th style={{ width: "50px" }}>NO</th>
+                  <th style={{ width: "40px" }}>NO</th>
                   <th>NAMA PEMILIK</th>
                   <th>ALAMAT USAHA</th>
-                  <th>JENIS USAHA / KATEGORI</th>
-                  <th>PEMASARAN / NIB</th>
-                  <th>NO. HP</th>
-                  <th style={{ textAlign: "center" }}>ACTIONS</th>
+                  <th>NAMA USAHA / KATEGORI</th>
+                  <th>STATUS NIB</th>
+                  <th>STATUS VERIFIKASI</th>
+                  <th style={{ textAlign: "center" }}>AKSI VERIFIKASI (ACC)</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,9 +215,13 @@ export default function AdminPage() {
                     <td><strong>{idx + 1}</strong></td>
                     <td>
                       <span className={styles.ownerTextBold}>{umkm.pemilik}</span>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>WA: +{umkm.kontak}</div>
                     </td>
                     <td>
                       <span className={styles.addressText}>{umkm.alamat}</span>
+                      {umkm.latitude && (
+                        <span style={{ display: "block", fontSize: "0.7rem", color: "#166534" }}>📍 GPS Presisi Terdaftar</span>
+                      )}
                     </td>
                     <td>
                       <div className={styles.businessCell}>
@@ -179,23 +237,43 @@ export default function AdminPage() {
                             : styles.nibBadgeTidak
                         }
                       >
-                        {umkm.nib || "Ada"}
+                        {umkm.nib || "Tidak"}
                       </span>
                     </td>
                     <td>
-                      <a href={`https://wa.me/${umkm.kontak}`} target="_blank" rel="noopener noreferrer" className={styles.phoneLink}>
-                        {umkm.kontak}
-                      </a>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "0.25rem 0.75rem",
+                          borderRadius: "999px",
+                          fontSize: "0.75rem",
+                          fontWeight: "700",
+                          backgroundColor: umkm.statusAcc === "Aktif" ? "rgba(21, 66, 18, 0.12)" : "rgba(245, 158, 11, 0.15)",
+                          color: umkm.statusAcc === "Aktif" ? "#154212" : "#B45309",
+                        }}
+                      >
+                        {umkm.statusAcc === "Aktif" ? "✅ Aktif (Terbit)" : "⏳ Pending Verifikasi"}
+                      </span>
                     </td>
                     <td>
                       <div className={styles.actionsCell}>
-                        <button className={styles.actionBtn} onClick={handleAction} title="Edit">
-                          <span className="material-symbols-outlined">edit</span>
-                        </button>
+                        {umkm.statusAcc === "Pending" ? (
+                          <button
+                            className="btn btn-primary"
+                            style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem" }}
+                            onClick={() => handleApprove(umkm.id, umkm.nama)}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>check_circle</span>
+                            ACC / Setujui
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: "0.8rem", color: "#154212", fontWeight: "600" }}>Terverifikasi</span>
+                        )}
+
                         <button
                           className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                          onClick={handleAction}
-                          title="Hapus"
+                          onClick={() => handleReject(umkm.id, umkm.nama)}
+                          title="Tolak / Hapus"
                         >
                           <span className="material-symbols-outlined">delete</span>
                         </button>
@@ -208,16 +286,7 @@ export default function AdminPage() {
           </div>
 
           <div className={styles.tableFooter}>
-            <span>Menampilkan 1-{filteredUMKM.length} dari 148 UMKM (Dokumen Resmi Desa Winong)</span>
-            <div className={styles.pagination}>
-              <button disabled className={styles.pageBtn}>
-                &lt;
-              </button>
-              <button className={`${styles.pageBtn} ${styles.pageActive}`}>1</button>
-              <button className={styles.pageBtn}>2</button>
-              <button className={styles.pageBtn}>3</button>
-              <button className={styles.pageBtn}>&gt;</button>
-            </div>
+            <span>Menampilkan {filteredUMKM.length} unit usaha terdaftar</span>
           </div>
         </section>
       </main>
@@ -228,7 +297,7 @@ export default function AdminPage() {
           <span className="material-symbols-outlined" style={{ color: "#9DD090" }}>
             check_circle
           </span>
-          <span>Data UMKM berhasil diperbarui di database Desa Winong.</span>
+          <span>{toastMessage}</span>
           <button onClick={() => setShowToast(false)} className={styles.toastClose}>
             <span className="material-symbols-outlined">close</span>
           </button>
