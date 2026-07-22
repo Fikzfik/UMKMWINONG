@@ -1,0 +1,37 @@
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card:hover {
+  border-color: var(--secondary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.icon {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+  font-family: var(--font-heading), serif;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 500;
+}

@@ -1,0 +1,25 @@
+.header {
+  background-color: var(--primary-dark);
+  padding: 5rem 0;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--secondary);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #E0E7DE;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}

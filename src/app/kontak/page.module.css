@@ -1,0 +1,130 @@
+.header {
+  background-color: var(--primary-dark);
+  padding: 5rem 0;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--secondary);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #E0E7DE;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+.infoCard {
+  padding-right: 2rem;
+}
+
+.desc {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.infoItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.icon {
+  font-size: 1.5rem;
+  background: var(--background);
+  padding: 0.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.infoItem h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+  color: var(--foreground);
+}
+
+.infoItem p {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.formCard {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 0.9rem;
+}
+
+.input, .textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+}
+
+.input:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+}
+
+.successMessage {
+  background-color: rgba(46, 125, 50, 0.1);
+  color: var(--primary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary-light);
+  text-align: center;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .infoCard {
+    padding-right: 0;
+  }
+}
