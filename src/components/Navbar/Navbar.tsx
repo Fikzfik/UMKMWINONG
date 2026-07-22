@@ -1,10 +1,16 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const pathname = usePathname();
+
+  // Hide main Navbar on Admin Panel
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className={styles.header}>
