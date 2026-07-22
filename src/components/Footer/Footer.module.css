@@ -2,8 +2,11 @@
   background-color: var(--surface-container-high);
   border-top: 1px solid var(--border-light);
   padding: 4rem 0 0 0;
+  width: 100%;
   margin-top: auto;
   color: var(--foreground);
+  position: relative;
+  z-index: 10;
 }
 
 .footerGrid {

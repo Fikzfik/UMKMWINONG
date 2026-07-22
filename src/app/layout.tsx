@@ -34,11 +34,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Navbar />
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+          <Navbar />
           <main style={{ flex: 1 }}>{children}</main>
+          <Footer />
         </div>
-        <Footer />
         <Script
           src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
           strategy="beforeInteractive"
