@@ -42,10 +42,14 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
     umkm.nama
   )},%20saya%20tertarik%20dengan%20produk%20Anda%20di%20WebDesa%20Winong.`;
 
-  // Dynamic Google Maps Search & Directions Link based on UMKM Address
+  // Dynamic Google Maps Search & Directions Link based on Coordinates OR Address
   const fullAddressQuery = `${umkm.alamat}, Desa Winong, Kec. Gemarang, Kab. Madiun`;
-  const gmapsDirLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddressQuery)}`;
-  const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(fullAddressQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const locationTarget = umkm.latitude && umkm.longitude 
+    ? `${umkm.latitude},${umkm.longitude}` 
+    : fullAddressQuery;
+
+  const gmapsDirLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationTarget)}`;
+  const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(locationTarget)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
 
   const heroImg =
     umkm.foto && umkm.foto[0] && umkm.foto[0].startsWith("http")

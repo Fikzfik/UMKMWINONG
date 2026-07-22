@@ -10,6 +10,9 @@ export interface UMKM {
   nib?: 'Ada' | 'Tidak';
   foto: string[];
   unggulan?: boolean;
+  latitude?: number;
+  longitude?: number;
+  gmapsUrl?: string;
 }
 
 export const umkmData: UMKM[] = [
@@ -27,7 +30,9 @@ export const umkmData: UMKM[] = [
       'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
-    unggulan: true
+    unggulan: true,
+    latitude: -7.6321,
+    longitude: 111.6543
   },
   {
     id: '2',
