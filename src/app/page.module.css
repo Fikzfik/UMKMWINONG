@@ -101,11 +101,11 @@
 .dualImageContainer {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: 32px;
+  height: 420px; /* Reduced optimal height so both photos are fully visible on scroll */
+  border-radius: 28px;
   overflow: hidden;
-  border: 8px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 25px 40px -10px rgba(21, 66, 18, 0.15);
+  border: 6px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 20px 35px -10px rgba(21, 66, 18, 0.15);
 }
 
 .baseImgWrap {
@@ -136,28 +136,28 @@
 
 .imgBadge {
   position: absolute;
-  bottom: 1.25rem;
-  left: 1.25rem;
+  bottom: 1rem;
+  left: 1rem;
   background: rgba(21, 66, 18, 0.85);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
   color: #FFFFFF;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  padding: 0.4rem 1rem;
+  padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
   z-index: 3;
 }
 
 .imgBadgeOverlay {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 1rem;
+  right: 1rem;
   background: rgba(125, 86, 45, 0.9);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
   color: #FFFFFF;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  padding: 0.4rem 1rem;
+  padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
   z-index: 3;
 }

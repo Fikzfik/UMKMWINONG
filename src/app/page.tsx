@@ -51,6 +51,7 @@ export default function Home() {
         );
 
         // 2. Image Reveal Curtain Scroll Effect for "Visi Kami" Section
+        // Starts earlier (top 85%) and finishes at (center 50%) so Photo 2 fully reveals seamlessly
         if (overlayImgRef.current && aboutSectionRef.current) {
           gsap.fromTo(
             overlayImgRef.current,
@@ -60,9 +61,9 @@ export default function Home() {
               ease: "none",
               scrollTrigger: {
                 trigger: aboutSectionRef.current,
-                start: "top 70%",
-                end: "bottom 40%",
-                scrub: 1.2,
+                start: "top 80%",
+                end: "center 45%",
+                scrub: 0.8,
               },
             }
           );
@@ -154,7 +155,7 @@ export default function Home() {
                     alt="Pengrajin Desa Winong"
                     className={styles.aboutImage}
                   />
-                  <span className={styles.imgBadge}>Proses Tradisional</span>
+                  <span className={styles.imgBadge}>1. Proses Tradisional</span>
                 </div>
 
                 {/* PHOTO 2: OVERLAY IMAGE (Tertimpa dari atas saat scroll) */}
@@ -164,7 +165,7 @@ export default function Home() {
                     alt="Hasil Produk Kerajinan Premium"
                     className={styles.aboutImage}
                   />
-                  <span className={styles.imgBadgeOverlay}>Hasil Produk Premium</span>
+                  <span className={styles.imgBadgeOverlay}>2. Hasil Produk Premium</span>
                 </div>
               </div>
             </div>
