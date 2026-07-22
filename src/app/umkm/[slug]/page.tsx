@@ -5,7 +5,13 @@ import styles from "./page.module.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
   const resolvedParams = await params;
-  const umkm = umkmData.find((u) => u.slug === resolvedParams.slug);
+  const rawSlug = resolvedParams.slug;
+  const decodedSlug = decodeURIComponent(rawSlug).toLowerCase();
+  
+  const umkm = umkmData.find(
+    (u) => u.slug === decodedSlug || u.slug.replace(/-/g, " ") === decodedSlug
+  );
+
   if (!umkm) return { title: "UMKM Tidak Ditemukan" };
   return {
     title: `${umkm.nama} | WebDesa Winong`,
@@ -21,7 +27,12 @@ export function generateStaticParams() {
 
 export default async function UMKMDetailPage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
   const resolvedParams = await params;
-  const umkm = umkmData.find((u) => u.slug === resolvedParams.slug);
+  const rawSlug = resolvedParams.slug;
+  const decodedSlug = decodeURIComponent(rawSlug).toLowerCase();
+
+  const umkm = umkmData.find(
+    (u) => u.slug === decodedSlug || u.slug.replace(/-/g, " ") === decodedSlug
+  );
 
   if (!umkm) {
     notFound();
@@ -37,7 +48,7 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
   const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(fullAddressQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 
   const heroImg =
-    umkm.foto && umkm.foto[0] && !umkm.foto[0].startsWith("/placeholder")
+    umkm.foto && umkm.foto[0] && umkm.foto[0].startsWith("http")
       ? umkm.foto[0]
       : "https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80";
 
@@ -101,8 +112,12 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
             <div className={styles.storyImgCol}>
               <div className={`organic-shadow ${styles.storyImgCard}`}>
                 <img
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Proses Pembuatan"
+                  src={
+                    umkm.foto && umkm.foto[1] && umkm.foto[1].startsWith("http")
+                      ? umkm.foto[1]
+                      : "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  }
+                  alt="Proses Pembuatan Usaha"
                   className={styles.storyImg}
                 />
               </div>
@@ -129,16 +144,16 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
             <div className={`hover-lift ${styles.productCard}`}>
               <div className={styles.productImgWrap}>
                 <img
-                  src="https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                  src={heroImg}
                   alt="Produk Utama"
                   className={styles.productImg}
                 />
               </div>
               <div className={styles.productBody}>
                 <span className={styles.productTag}>Best Seller</span>
-                <h3 className={styles.productTitle}>Produk Spesial Winong</h3>
+                <h3 className={styles.productTitle}>Produk Spesial {umkm.nama}</h3>
                 <div className={styles.productFooter}>
-                  <span className={styles.productPrice}>Rp 150.000</span>
+                  <span className={styles.productPrice}>Rp 25.000</span>
                   <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.cartBtn}>
                     <span className="material-symbols-outlined">add_shopping_cart</span>
                   </a>
@@ -156,10 +171,10 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
                 />
               </div>
               <div className={styles.productBody}>
-                <span className={styles.productTag}>Limited Edition</span>
-                <h3 className={styles.productTitle}>Paket Ole-Ole Desa</h3>
+                <span className={styles.productTag}>Paket Hemat</span>
+                <h3 className={styles.productTitle}>Paket Oleh-Oleh khas Winong</h3>
                 <div className={styles.productFooter}>
-                  <span className={styles.productPrice}>Rp 85.000</span>
+                  <span className={styles.productPrice}>Rp 65.000</span>
                   <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.cartBtn}>
                     <span className="material-symbols-outlined">add_shopping_cart</span>
                   </a>
@@ -178,9 +193,9 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
               </div>
               <div className={styles.productBody}>
                 <span className={styles.productTag}>Custom Order</span>
-                <h3 className={styles.productTitle}>Kerajinan Tangan Premium</h3>
+                <h3 className={styles.productTitle}>Pesanan Khusus / Grosir</h3>
                 <div className={styles.productFooter}>
-                  <span className={styles.productPrice}>Rp 220.000</span>
+                  <span className={styles.productPrice}>Hubungi Penjual</span>
                   <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.cartBtn}>
                     <span className="material-symbols-outlined">add_shopping_cart</span>
                   </a>
@@ -192,13 +207,13 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
       </section>
 
       {/* 4. HUBUNGI PENJUAL & INTEGRASI GOOGLE MAPS */}
-      <section className="section-padding">
+      <section className="section-padding" id="lokasi-gmaps">
         <div className="container">
           <div className={`organic-shadow ${styles.contactBox}`}>
             <div className={styles.contactInfoCol}>
               <h2 className={styles.contactTitle}>Hubungi Penjual & Lokasi</h2>
               <p className={styles.contactSub}>
-                Tertarik dengan produk kami atau ingin memesan secara langsung? Kunjungi workshop kami atau hubungi {umkm.pemilik}.
+                Ingin datang langsung ke tempat usaha atau berkonsultasi dengan {umkm.pemilik}? Gunakan petunjuk peta di bawah ini.
               </p>
 
               <div className={styles.contactList}>
@@ -207,6 +222,8 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
                   <div>
                     <h4 className={styles.contactItemTitle}>Alamat Usaha</h4>
                     <p className={styles.contactItemDesc}>{fullAddressQuery}</p>
+                    
+                    {/* TOMBOL GOOGLE MAPS DIRECTION */}
                     <a
                       href={gmapsDirLink}
                       target="_blank"
@@ -214,7 +231,7 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
                       className={styles.gmapsActionLink}
                     >
                       <span className="material-symbols-outlined">near_me</span>
-                      Buka Petunjuk Arah di Google Maps
+                      Buka Petunjuk Arah di Google Maps App
                     </a>
                   </div>
                 </div>
@@ -235,7 +252,7 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
                 className={`btn btn-primary ${styles.waActionBtn}`}
               >
                 <span className="material-symbols-outlined">chat_bubble</span>
-                Chat via WhatsApp (+{umkm.kontak})
+                Chat WhatsApp ({umkm.kontak})
               </a>
             </div>
 
