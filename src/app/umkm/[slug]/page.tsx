@@ -31,6 +31,11 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
     umkm.nama
   )},%20saya%20tertarik%20dengan%20produk%20Anda%20di%20WebDesa%20Winong.`;
 
+  // Dynamic Google Maps Search & Directions Link based on UMKM Address
+  const fullAddressQuery = `${umkm.alamat}, Desa Winong, Kec. Gemarang, Kab. Madiun`;
+  const gmapsDirLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddressQuery)}`;
+  const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(fullAddressQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
   const heroImg =
     umkm.foto && umkm.foto[0] && !umkm.foto[0].startsWith("/placeholder")
       ? umkm.foto[0]
@@ -55,6 +60,9 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
               <div className={styles.categoryBadgeRow}>
                 <span className={`material-symbols-outlined ${styles.verifyIcon}`}>verified</span>
                 <span className={styles.categoryBadgeText}>Kategori: {umkm.kategori}</span>
+                {umkm.nib === "Ada" && (
+                  <span className={styles.nibBadgeHeader}>NIB Terverifikasi</span>
+                )}
               </div>
             </div>
           </div>
@@ -77,15 +85,15 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
               <div className={styles.featureBadges}>
                 <div className={styles.badgeItem}>
                   <span className="material-symbols-outlined">eco</span>
-                  <span>Pewarna Alami</span>
+                  <span>Bahan Alami</span>
                 </div>
                 <div className={styles.badgeItem}>
                   <span className="material-symbols-outlined">groups</span>
-                  <span>Pemberdayaan</span>
+                  <span>Pemberdayaan Warga</span>
                 </div>
                 <div className={styles.badgeItem}>
                   <span className="material-symbols-outlined">workspace_premium</span>
-                  <span>Kualitas Ekspor</span>
+                  <span>Kualitas Desa Winong</span>
                 </div>
               </div>
             </div>
@@ -183,22 +191,31 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
-      {/* 4. HUBUNGI PENJUAL & LOCATION MAP */}
+      {/* 4. HUBUNGI PENJUAL & INTEGRASI GOOGLE MAPS */}
       <section className="section-padding">
         <div className="container">
           <div className={`organic-shadow ${styles.contactBox}`}>
             <div className={styles.contactInfoCol}>
-              <h2 className={styles.contactTitle}>Hubungi Penjual</h2>
+              <h2 className={styles.contactTitle}>Hubungi Penjual & Lokasi</h2>
               <p className={styles.contactSub}>
-                Tertarik dengan produk kami atau ingin memesan secara khusus? Jangan ragu untuk berdiskusi langsung dengan {umkm.pemilik}.
+                Tertarik dengan produk kami atau ingin memesan secara langsung? Kunjungi workshop kami atau hubungi {umkm.pemilik}.
               </p>
 
               <div className={styles.contactList}>
                 <div className={styles.contactItem}>
                   <span className={`material-symbols-outlined ${styles.contactIcon}`}>location_on</span>
                   <div>
-                    <h4 className={styles.contactItemTitle}>Alamat Workshop</h4>
-                    <p className={styles.contactItemDesc}>{umkm.alamat}</p>
+                    <h4 className={styles.contactItemTitle}>Alamat Usaha</h4>
+                    <p className={styles.contactItemDesc}>{fullAddressQuery}</p>
+                    <a
+                      href={gmapsDirLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.gmapsActionLink}
+                    >
+                      <span className="material-symbols-outlined">near_me</span>
+                      Buka Petunjuk Arah di Google Maps
+                    </a>
                   </div>
                 </div>
 
@@ -218,15 +235,16 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
                 className={`btn btn-primary ${styles.waActionBtn}`}
               >
                 <span className="material-symbols-outlined">chat_bubble</span>
-                Chat melalui WhatsApp
+                Chat via WhatsApp (+{umkm.kontak})
               </a>
             </div>
 
+            {/* DYNAMIC GOOGLE MAPS EMBEDDED IFRAME */}
             <div className={styles.mapCol}>
               <div className={styles.mapCard}>
                 <iframe
-                  title="Lokasi Desa Winong"
-                  src="https://maps.google.com/maps?q=Winong,Gemarang,Madiun&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                  title={`Map ${umkm.nama}`}
+                  src={gmapsEmbedSrc}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
