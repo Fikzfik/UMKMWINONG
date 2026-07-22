@@ -17,6 +17,10 @@ export default function Home() {
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const heroDescRef = useRef<HTMLParagraphElement>(null);
   const heroActionsRef = useRef<HTMLDivElement>(null);
+  
+  const aboutSectionRef = useRef<HTMLDivElement>(null);
+  const overlayImgRef = useRef<HTMLDivElement>(null);
+  
   const unggulanUMKM = umkmData.filter((u) => u.unggulan).slice(0, 3);
 
   useEffect(() => {
@@ -29,7 +33,7 @@ export default function Home() {
           gsap.registerPlugin(ScrollTrigger);
         }
 
-        // Hero Entrance Animation
+        // 1. Hero Entrance Animation
         gsap.fromTo(
           heroTitleRef.current,
           { opacity: 0, y: 40 },
@@ -46,7 +50,25 @@ export default function Home() {
           { opacity: 1, y: 0, duration: 0.8, delay: 0.4, ease: "power3.out" }
         );
 
-        // Scroll reveal sections
+        // 2. Image Reveal Curtain Scroll Effect for "Visi Kami" Section
+        if (overlayImgRef.current && aboutSectionRef.current) {
+          gsap.fromTo(
+            overlayImgRef.current,
+            { clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 0%)" },
+            {
+              clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: aboutSectionRef.current,
+                start: "top 70%",
+                end: "bottom 40%",
+                scrub: 1.2,
+              },
+            }
+          );
+        }
+
+        // 3. Scroll reveal sections
         const sections = document.querySelectorAll(".gsap-reveal");
         sections.forEach((section) => {
           gsap.fromTo(
@@ -66,7 +88,7 @@ export default function Home() {
           );
         });
 
-        // Stagger categories
+        // 4. Stagger categories
         gsap.fromTo(
           ".gsap-cat-card",
           { opacity: 0, y: 30, scale: 0.95 },
@@ -115,19 +137,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. ABOUT / VISI SECTION (TERTIARY BG) */}
-      <section className={`section-padding tertiary-bg gsap-reveal ${styles.aboutSection}`}>
+      {/* 2. ABOUT / VISI SECTION (WITH GSAP DUAL-IMAGE OVERLAY CURTAIN REVEAL) */}
+      <section
+        ref={aboutSectionRef}
+        className={`section-padding tertiary-bg gsap-reveal ${styles.aboutSection}`}
+      >
         <div className="container">
           <div className={styles.aboutGrid}>
+            {/* DUAL IMAGE OVERLAY STACK WITH GSAP REVEAL */}
             <div className={styles.aboutImageCol}>
-              <div className={`organic-shadow ${styles.aboutImageCard}`}>
-                <img
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Pengrajin Desa Winong"
-                  className={styles.aboutImage}
-                />
+              <div className={`organic-shadow ${styles.dualImageContainer}`}>
+                {/* PHOTO 1: BASE IMAGE (Pengrajin Tradisional) */}
+                <div className={styles.baseImgWrap}>
+                  <img
+                    src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Pengrajin Desa Winong"
+                    className={styles.aboutImage}
+                  />
+                  <span className={styles.imgBadge}>Proses Tradisional</span>
+                </div>
+
+                {/* PHOTO 2: OVERLAY IMAGE (Tertimpa dari atas saat scroll) */}
+                <div ref={overlayImgRef} className={styles.overlayImgWrap}>
+                  <img
+                    src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Hasil Produk Kerajinan Premium"
+                    className={styles.aboutImage}
+                  />
+                  <span className={styles.imgBadgeOverlay}>Hasil Produk Premium</span>
+                </div>
               </div>
             </div>
+
             <div className={styles.aboutTextCol}>
               <span className={styles.sectionBadge}>Visi Kami</span>
               <h2 className={styles.sectionHeading}>
