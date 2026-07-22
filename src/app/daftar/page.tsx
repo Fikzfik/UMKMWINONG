@@ -43,7 +43,7 @@ export default function DaftarUMKMPage() {
           setLoadingGps(false);
         },
         (error) => {
-          alert("Gagal mendeteksi lokasi GPS. Pastikan izin lokasi di HP/Browser Anda aktif.");
+          alert("Gagal mendeteksi lokasi GPS. Pastikan izin lokasi di browser Anda aktif.");
           setLoadingGps(false);
         }
       );
@@ -58,7 +58,8 @@ export default function DaftarUMKMPage() {
   };
 
   return (
-    <>
+    <div style={{ minHeight: "80vh" }}>
+      {/* BANNER HEADER */}
       <div className={styles.header}>
         <div className={styles.headerOverlay}></div>
         <div className={`container ${styles.headerContent}`}>
@@ -84,7 +85,7 @@ export default function DaftarUMKMPage() {
                 <span style={{ color: "#B45309", fontWeight: "700" }}>"Pending Verifikasi"</span>. Tim Perangkat Desa Winong akan memverifikasi keaslian usaha Anda sebelum menerbitkannya di Katalog Publik.
               </p>
 
-              {gpsDetected && coords.lat && (
+              {gpsDetected && coords.lat !== null && (
                 <div style={{ backgroundColor: "rgba(21, 66, 18, 0.08)", padding: "1rem", borderRadius: "12px", marginBottom: "1.5rem", fontSize: "0.9rem", color: "#154212" }}>
                   📍 <strong>Koordinat Presisi GPS Terrekam:</strong> {coords.lat}, {coords.lng}
                 </div>
@@ -260,7 +261,7 @@ export default function DaftarUMKMPage() {
                       </button>
                     </div>
 
-                    {gpsDetected && coords.lat && (
+                    {gpsDetected && coords.lat !== null && (
                       <div style={{ backgroundColor: "#F0FDF4", border: "1px solid #22C55E", padding: "0.5rem 1rem", borderRadius: "8px", fontSize: "0.85rem", color: "#166534", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
                         <span className="material-symbols-outlined">check_circle</span>
                         Koordinat GPS Berhasil Dikunci: Latitude {coords.lat}, Longitude {coords.lng}
@@ -294,6 +295,6 @@ export default function DaftarUMKMPage() {
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }
