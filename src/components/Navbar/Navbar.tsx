@@ -27,7 +27,7 @@ export default function Navbar() {
           <Link href="/umkm" className={`${styles.link} ${pathname.startsWith("/umkm") ? styles.active : ""}`}>
             Catalog
           </Link>
-          <Link href="/profil" className={`${styles.link} ${pathname === "/profil" ? styles.active : ""}`}>
+          <Link href="/about" className={`${styles.link} ${pathname === "/about" || pathname === "/profil" ? styles.active : ""}`}>
             About
           </Link>
           <Link href="/daftar" className={`${styles.link} ${pathname === "/daftar" ? styles.active : ""}`}>
