@@ -14,12 +14,18 @@ declare global {
 }
 
 export default function Home() {
+  const heroBadgeRef = useRef<HTMLSpanElement>(null);
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const heroDescRef = useRef<HTMLParagraphElement>(null);
   const heroActionsRef = useRef<HTMLDivElement>(null);
   
   const aboutSectionRef = useRef<HTMLDivElement>(null);
   const overlayImgRef = useRef<HTMLDivElement>(null);
+  const stat1Ref = useRef<HTMLSpanElement>(null);
+  const stat2Ref = useRef<HTMLSpanElement>(null);
+
+  const whyImgRef = useRef<HTMLImageElement>(null);
+  const whySectionRef = useRef<HTMLDivElement>(null);
   
   const unggulanUMKM = umkmData.filter((u) => u.unggulan).slice(0, 3);
 
@@ -33,25 +39,50 @@ export default function Home() {
           gsap.registerPlugin(ScrollTrigger);
         }
 
-        // 1. Hero Entrance Animation
-        gsap.fromTo(
-          heroTitleRef.current,
-          { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-        );
-        gsap.fromTo(
-          heroDescRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: "power3.out" }
-        );
-        gsap.fromTo(
-          heroActionsRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8, delay: 0.4, ease: "power3.out" }
-        );
+        // ----------------------------------------------------
+        // 1. HERO SECTION ENTRANCE ANIMATIONS
+        // ----------------------------------------------------
+        const tlHero = gsap.timeline();
+        tlHero
+          .fromTo(
+            heroBadgeRef.current,
+            { opacity: 0, scale: 0.8, y: -20 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" }
+          )
+          .fromTo(
+            heroTitleRef.current,
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+            "-=0.3"
+          )
+          .fromTo(
+            heroDescRef.current,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+            "-=0.5"
+          )
+          .fromTo(
+            heroActionsRef.current?.children || [],
+            { opacity: 0, scale: 0.9, y: 20 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "back.out(1.5)" },
+            "-=0.4"
+          );
 
-        // 2. Image Reveal Curtain Scroll Effect for "Visi Kami" Section
-        // Starts earlier (top 85%) and finishes at (center 50%) so Photo 2 fully reveals seamlessly
+        // Parallax background on Hero
+        gsap.to(`.${styles.heroBgImage}`, {
+          yPercent: 25,
+          ease: "none",
+          scrollTrigger: {
+            trigger: `.${styles.hero}`,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        // ----------------------------------------------------
+        // 2. VISI KAMI SECTION - DUAL IMAGE CURTAIN + COUNTER REVEAL
+        // ----------------------------------------------------
         if (overlayImgRef.current && aboutSectionRef.current) {
           gsap.fromTo(
             overlayImgRef.current,
@@ -69,40 +100,152 @@ export default function Home() {
           );
         }
 
-        // 3. Scroll reveal sections
-        const sections = document.querySelectorAll(".gsap-reveal");
-        sections.forEach((section) => {
+        // About Text & Stats Entrance
+        gsap.fromTo(
+          `.${styles.aboutTextCol} > *`,
+          { opacity: 0, x: 40 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: `.${styles.aboutTextCol}`,
+              start: "top 80%",
+            },
+          }
+        );
+
+        // Counter Animated Text
+        if (stat1Ref.current && stat2Ref.current) {
           gsap.fromTo(
-            section,
-            { opacity: 0, y: 50 },
+            { val: 0 },
+            { val: 150 },
             {
-              opacity: 1,
-              y: 0,
-              duration: 0.9,
-              ease: "power2.out",
+              val: 150,
+              duration: 2,
+              ease: "power1.out",
               scrollTrigger: {
-                trigger: section,
-                start: "top 85%",
-                toggleActions: "play none none none",
+                trigger: stat1Ref.current,
+                start: "top 90%",
+              },
+              onUpdate: function () {
+                if (stat1Ref.current) stat1Ref.current.innerText = Math.floor(this.targets()[0].val) + "+";
               },
             }
           );
-        });
+          gsap.fromTo(
+            { val: 0 },
+            { val: 12 },
+            {
+              val: 12,
+              duration: 1.8,
+              ease: "power1.out",
+              scrollTrigger: {
+                trigger: stat2Ref.current,
+                start: "top 90%",
+              },
+              onUpdate: function () {
+                if (stat2Ref.current) stat2Ref.current.innerText = Math.floor(this.targets()[0].val).toString();
+              },
+            }
+          );
+        }
 
-        // 4. Stagger categories
+        // ----------------------------------------------------
+        // 3. KATEGORI UNGGULAN - 3D FLIP STAGGER
+        // ----------------------------------------------------
         gsap.fromTo(
-          ".gsap-cat-card",
-          { opacity: 0, y: 30, scale: 0.95 },
+          `.gsap-cat-card`,
+          { opacity: 0, y: 50, rotateX: 25 },
+          {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: `.gsap-cat-grid`,
+              start: "top 80%",
+            },
+          }
+        );
+
+        // ----------------------------------------------------
+        // 4. UMKM PILIHAN (BENTO GRID) - ROTATED SLIDE UP
+        // ----------------------------------------------------
+        gsap.fromTo(
+          `.gsap-umkm-card`,
+          { opacity: 0, y: 60, scale: 0.92, rotate: -2 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.7,
-            stagger: 0.15,
-            ease: "back.out(1.4)",
+            rotate: 0,
+            duration: 0.9,
+            stagger: 0.2,
+            ease: "back.out(1.2)",
             scrollTrigger: {
-              trigger: ".gsap-cat-grid",
+              trigger: `.${styles.grid3}`,
               start: "top 80%",
+            },
+          }
+        );
+
+        // ----------------------------------------------------
+        // 5. MENGAPA MEMBELI PRODUK LOKAL - FEATURE ITEMS STAGGER & PARALLAX
+        // ----------------------------------------------------
+        gsap.fromTo(
+          `.${styles.whyItem}`,
+          { opacity: 0, x: -50 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: `.${styles.whyList}`,
+              start: "top 80%",
+            },
+          }
+        );
+
+        // Photo zoom effect on scroll
+        if (whyImgRef.current && whySectionRef.current) {
+          gsap.fromTo(
+            whyImgRef.current,
+            { scale: 1.2 },
+            {
+              scale: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: whySectionRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            }
+          );
+        }
+
+        // ----------------------------------------------------
+        // 6. NEWSLETTER / CTA SECTION - BOUNCE POP
+        // ----------------------------------------------------
+        gsap.fromTo(
+          `.${styles.ctaSection} .container`,
+          { opacity: 0, scale: 0.9, y: 30 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+              trigger: `.${styles.ctaSection}`,
+              start: "top 85%",
             },
           }
         );
@@ -120,6 +263,9 @@ export default function Home() {
         <div className={styles.heroGradient}></div>
         <div className={`container ${styles.heroContent}`}>
           <div className={styles.heroTextWrap}>
+            <span ref={heroBadgeRef} className={styles.heroBadge}>
+              Pemberdayaan UMKM Desa
+            </span>
             <h1 ref={heroTitleRef} className={styles.heroTitle}>
               Pemberdayaan UMKM Desa: Dari Akar Rumput Menuju Global
             </h1>
@@ -141,7 +287,7 @@ export default function Home() {
       {/* 2. ABOUT / VISI SECTION (WITH GSAP DUAL-IMAGE OVERLAY CURTAIN REVEAL) */}
       <section
         ref={aboutSectionRef}
-        className={`section-padding tertiary-bg gsap-reveal ${styles.aboutSection}`}
+        className={`section-padding tertiary-bg ${styles.aboutSection}`}
       >
         <div className="container">
           <div className={styles.aboutGrid}>
@@ -183,11 +329,15 @@ export default function Home() {
               </p>
               <div className={styles.statGroup}>
                 <div className={styles.statItem}>
-                  <span className={styles.statNum}>150+</span>
+                  <span ref={stat1Ref} className={styles.statNum}>
+                    0+
+                  </span>
                   <span className={styles.statLabel}>Mitra UMKM</span>
                 </div>
                 <div className={styles.statItem}>
-                  <span className={styles.statNum}>12</span>
+                  <span ref={stat2Ref} className={styles.statNum}>
+                    0
+                  </span>
                   <span className={styles.statLabel}>Kategori Produk</span>
                 </div>
               </div>
@@ -197,7 +347,7 @@ export default function Home() {
       </section>
 
       {/* 3. KATEGORI UNGGULAN SECTION */}
-      <section className={`section-padding gsap-reveal ${styles.catSection}`}>
+      <section className={`section-padding ${styles.catSection}`}>
         <div className="container text-center">
           <h2 className={styles.sectionHeadingCenter}>Kategori Unggulan</h2>
           <p className={styles.sectionSubCenter}>
@@ -245,7 +395,7 @@ export default function Home() {
       </section>
 
       {/* 4. FEATURED UMKM BENTO GRID SECTION */}
-      <section className={`section-padding gsap-reveal ${styles.featuredSection}`}>
+      <section className={`section-padding ${styles.featuredSection}`}>
         <div className="container">
           <div className={styles.featuredHeader}>
             <div>
@@ -259,14 +409,16 @@ export default function Home() {
 
           <div className={styles.grid3}>
             {unggulanUMKM.map((umkm) => (
-              <UMKMCard key={umkm.id} umkm={umkm} />
+              <div key={umkm.id} className="gsap-umkm-card">
+                <UMKMCard umkm={umkm} />
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5. WHY SUPPORT LOCAL SECTION (PRIMARY DEEP GREEN BG) */}
-      <section className={`section-padding gsap-reveal ${styles.whySection}`}>
+      {/* 5. WHY SUPPORT LOCAL SECTION (PRIMARY DEEP GREEN BG WITH PARALLAX) */}
+      <section ref={whySectionRef} className={`section-padding ${styles.whySection}`}>
         <div className="container">
           <div className={styles.whyGrid}>
             <div className={styles.whyTextCol}>
@@ -307,6 +459,7 @@ export default function Home() {
             <div className={styles.whyImgCol}>
               <div className={`organic-shadow ${styles.whyImgCard}`}>
                 <img
+                  ref={whyImgRef}
                   src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Warga Desa Winong"
                   className={styles.whyImg}
@@ -318,7 +471,7 @@ export default function Home() {
       </section>
 
       {/* 6. NEWSLETTER / CTA SECTION (TERTIARY BG) */}
-      <section className={`section-padding tertiary-bg gsap-reveal ${styles.ctaSection}`}>
+      <section className={`section-padding tertiary-bg ${styles.ctaSection}`}>
         <div className="container text-center" style={{ maxWidth: "700px" }}>
           <h2 className={styles.sectionHeadingCenter}>Jadilah Bagian dari Perubahan</h2>
           <p className={styles.sectionSubCenter} style={{ marginBottom: "2.5rem" }}>
