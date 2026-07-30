@@ -247,7 +247,7 @@ export default function AdminPage() {
                             <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <RechartsTooltip formatter={(value: number) => [`${value} UMKM`, "Jumlah"]} />
+                        <RechartsTooltip formatter={(value: any) => [`${value} UMKM`, "Jumlah"]} />
                         <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                       </PieChart>
                     </ResponsiveContainer>
