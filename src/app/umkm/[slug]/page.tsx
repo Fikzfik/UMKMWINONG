@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!umkm) return { title: "UMKM Tidak Ditemukan" };
   
-  const katNama = umkm.kategori?.nama || 'Umum';
-  const categoryFallback = fallbackImages[katNama] || fallbackImages['Umum'];
+  const katNama = Array.isArray(umkm.kategori) ? umkm.kategori[0]?.nama : (umkm.kategori as any)?.nama || 'Umum';
+  const categoryFallback = fallbackImages[katNama as string] || fallbackImages['Umum'];
   const galeriImages = umkm.galeri?.map((g: any) => g.image) || [];
   const ogImage = umkm.logo_url || (galeriImages.length > 0 ? galeriImages[0] : categoryFallback);
 
@@ -86,8 +86,8 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
   const gmapsDirLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationTarget)}`;
   const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(locationTarget)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
 
-  const katNama = umkm.kategori?.nama || 'Umum';
-  const categoryFallback = fallbackImages[katNama] || fallbackImages['Umum'];
+  const katNama = Array.isArray(umkm.kategori) ? umkm.kategori[0]?.nama : (umkm.kategori as any)?.nama || 'Umum';
+  const categoryFallback = fallbackImages[katNama as string] || fallbackImages['Umum'];
 
   const galeriImages = umkm.galeri?.map((g: any) => g.image) || [];
   const heroImg = galeriImages.length > 0 ? galeriImages[0] : categoryFallback;

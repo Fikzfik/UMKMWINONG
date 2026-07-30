@@ -7,7 +7,9 @@ export interface UMKMData {
   description: string;
   logo_url: string | null;
   nib: string | null;
-  kategori?: { nama: string };
+  kategori?: { nama: string } | { nama: string }[] | any;
+  produk?: { foto: string | null }[] | any[];
+  galeri?: { image: string }[] | any[];
 }
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
@@ -30,8 +32,8 @@ const fallbackImages: Record<string, string> = {
 };
 
 export default function UMKMCard({ umkm }: { umkm: UMKMData }) {
-  const katNama = umkm.kategori?.nama || 'Umum';
-  const badgeStyle = categoryColors[katNama] || categoryColors['Kuliner'];
+  const katNama = Array.isArray(umkm.kategori) ? umkm.kategori[0]?.nama : (umkm.kategori as any)?.nama || 'Umum';
+  const badgeStyle = categoryColors[katNama as string] || categoryColors['Kuliner'];
 
   const productPhoto = umkm.produk && umkm.produk.length > 0 && umkm.produk[0].foto ? umkm.produk[0].foto : null;
   const galeriPhoto = umkm.galeri && umkm.galeri.length > 0 ? umkm.galeri[0].image : null;
