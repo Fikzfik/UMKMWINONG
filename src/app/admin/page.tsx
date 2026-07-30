@@ -17,6 +17,7 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<"Semua" | "Aktif" | "Pending">("Semua");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
@@ -131,30 +132,38 @@ export default function AdminPage() {
 
   return (
     <div className={styles.adminLayout}>
-      <aside className={styles.sidebar}>
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div className={styles.mobileOverlay} onClick={() => setIsMobileMenuOpen(false)}></div>
+      )}
+
+      <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.sidebarHeader}>
           <h1 className={styles.brandTitle}>Admin Panel</h1>
           <p className={styles.brandSub}>WebDesa Portal Winong</p>
+          <button className={styles.closeMenuBtn} onClick={() => setIsMobileMenuOpen(false)}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
 
         <nav className={styles.sideNav}>
           <button
             className={`${styles.navItem} ${activeTab === "dashboard" ? styles.active : ""}`}
-            onClick={() => setActiveTab("dashboard")}
+            onClick={() => { setActiveTab("dashboard"); setIsMobileMenuOpen(false); }}
           >
             <span className="material-symbols-outlined">dashboard</span>
             <span>Dashboard</span>
           </button>
           <button
             className={`${styles.navItem} ${activeTab === "umkm" ? styles.active : ""}`}
-            onClick={() => setActiveTab("umkm")}
+            onClick={() => { setActiveTab("umkm"); setIsMobileMenuOpen(false); }}
           >
             <span className="material-symbols-outlined">storefront</span>
             <span>Verifikasi UMKM {pendingCount > 0 && `(${pendingCount})`}</span>
           </button>
           <button
             className={`${styles.navItem} ${activeTab === "settings" ? styles.active : ""}`}
-            onClick={() => setActiveTab("settings")}
+            onClick={() => { setActiveTab("settings"); setIsMobileMenuOpen(false); }}
           >
             <span className="material-symbols-outlined">settings</span>
             <span>Settings</span>
@@ -184,11 +193,16 @@ export default function AdminPage() {
         {activeTab === "dashboard" && (
           <>
             <header className={styles.header}>
-              <div>
-                <h2 className={styles.pageTitle}>Dashboard Admin</h2>
-                <p className={styles.pageSub}>
-                  Ringkasan analitik dan statistik data UMKM Desa Winong.
-                </p>
+              <div className={styles.headerLeft}>
+                <button className={styles.hamburgerBtn} onClick={() => setIsMobileMenuOpen(true)}>
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+                <div>
+                  <h2 className={styles.pageTitle}>Dashboard Admin</h2>
+                  <p className={styles.pageSub}>
+                    Ringkasan analitik dan statistik data UMKM Desa Winong.
+                  </p>
+                </div>
               </div>
             </header>
 
@@ -282,11 +296,16 @@ export default function AdminPage() {
         {activeTab === "umkm" && (
           <>
             <header className={styles.header}>
-              <div>
-                <h2 className={styles.pageTitle}>Panel Verifikasi & Data UMKM</h2>
-                <p className={styles.pageSub}>
-                  Verifikasi keaslian pendaftaran warga Desa Winong sebelum diterbitkan di Katalog Publik.
-                </p>
+              <div className={styles.headerLeft}>
+                <button className={styles.hamburgerBtn} onClick={() => setIsMobileMenuOpen(true)}>
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+                <div>
+                  <h2 className={styles.pageTitle}>Panel Verifikasi & Data UMKM</h2>
+                  <p className={styles.pageSub}>
+                    Verifikasi keaslian pendaftaran warga Desa Winong sebelum diterbitkan di Katalog Publik.
+                  </p>
+                </div>
               </div>
               <Link href="/daftar" className="btn btn-primary btn-pill">
                 <span className="material-symbols-outlined">add</span>
@@ -323,24 +342,26 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className={styles.searchWrapper}>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
                   <button 
                     onClick={handleExportExcel} 
                     className="btn btn-outline" 
-                    style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", marginRight: "0.5rem" }}
+                    style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem" }}
                     title="Unduh data tabel saat ini ke format Excel"
                   >
                     <Download size={16} /> Export Excel
                   </button>
-                  
-                  <span className={`material-symbols-outlined ${styles.searchIcon}`}>search</span>
-                  <input
-                    type="text"
-                    placeholder="Cari pemilik, nama usaha, atau alamat..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className={styles.searchInput}
-                  />
+
+                  <div className={styles.searchWrapper}>
+                    <span className={`material-symbols-outlined ${styles.searchIcon}`}>search</span>
+                    <input
+                      type="text"
+                      placeholder="Cari pemilik, nama usaha, atau alamat..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className={styles.searchInput}
+                    />
+                  </div>
                 </div>
               </div>
 

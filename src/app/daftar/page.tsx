@@ -264,7 +264,7 @@ export default function DaftarUMKMPage() {
       </div>
 
       <section style={{ marginTop: "-3rem", position: "relative", zIndex: 20 }}>
-        <div className="container" style={{ maxWidth: "850px" }}>
+        <div className="container" style={{ maxWidth: "850px", margin: "0 auto" }}>
           
           {submitted ? (
             <div className={`organic-shadow ${styles.successCard}`}>
