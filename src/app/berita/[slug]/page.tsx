@@ -4,12 +4,33 @@ import { notFound } from "next/navigation";
 import { beritaData } from "@/data/berita";
 import styles from "./page.module.css";
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const berita = beritaData.find(b => b.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const resolvedParams = await params;
+  const berita = beritaData.find(b => b.slug === resolvedParams.slug);
   if (!berita) return { title: 'Berita Tidak Ditemukan' };
+  
   return {
     title: `${berita.judul} | Berita Desa Winong`,
-    description: berita.ringkasan
+    description: berita.ringkasan,
+    openGraph: {
+      title: `${berita.judul} | Berita Desa Winong`,
+      description: berita.ringkasan,
+      images: [
+        {
+          url: berita.foto,
+          width: 800,
+          height: 600,
+          alt: berita.judul,
+        },
+      ],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${berita.judul} | Berita Desa Winong`,
+      description: berita.ringkasan,
+      images: [berita.foto],
+    },
   };
 }
 
@@ -19,8 +40,9 @@ export function generateStaticParams() {
   }));
 }
 
-export default function BeritaDetailPage({ params }: { params: { slug: string } }) {
-  const berita = beritaData.find(b => b.slug === params.slug);
+export default async function BeritaDetailPage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const resolvedParams = await params;
+  const berita = beritaData.find(b => b.slug === resolvedParams.slug);
   
   if (!berita) {
     notFound();

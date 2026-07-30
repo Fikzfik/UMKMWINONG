@@ -14,6 +14,14 @@ export async function DELETE(request: Request) {
 
     const supabase = await createClient();
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // 1. Hapus file dari Supabase Storage
     // Asumsi public URL format: https://.../storage/v1/object/public/umkm-storage/folder/filename
     // Kita ekstrak path setelah "umkm-storage/"
@@ -60,6 +68,14 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
     // 1. Upload File
     const fileExt = file.name.split('.').pop();

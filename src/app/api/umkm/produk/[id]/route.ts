@@ -14,6 +14,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const supabase = await createClient();
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { data, error } = await supabase
       .from("produk")
       .update({ nama, harga, deskripsi })

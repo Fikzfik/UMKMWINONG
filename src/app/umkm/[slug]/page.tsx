@@ -3,6 +3,16 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
 
+const fallbackImages: Record<string, string> = {
+  Kuliner: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Kerajinan: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Pertanian: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Jasa: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Perdagangan: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+  Umum: 'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
   const resolvedParams = await params;
   const id = resolvedParams.slug;
@@ -10,15 +20,39 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const supabase = await createClient();
   const { data: umkm } = await supabase
     .from("umkm")
-    .select("business_name, description")
+    .select("business_name, description, logo_url, kategori(nama), galeri(image)")
     .eq("id", id)
     .single();
 
   if (!umkm) return { title: "UMKM Tidak Ditemukan" };
   
+  const katNama = umkm.kategori?.nama || 'Umum';
+  const categoryFallback = fallbackImages[katNama] || fallbackImages['Umum'];
+  const galeriImages = umkm.galeri?.map((g: any) => g.image) || [];
+  const ogImage = umkm.logo_url || (galeriImages.length > 0 ? galeriImages[0] : categoryFallback);
+
   return {
     title: `${umkm.business_name} | WebDesa Winong`,
     description: umkm.description,
+    openGraph: {
+      title: `${umkm.business_name} | WebDesa Winong`,
+      description: umkm.description,
+      images: [
+        {
+          url: ogImage,
+          width: 800,
+          height: 600,
+          alt: umkm.business_name,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${umkm.business_name} | WebDesa Winong`,
+      description: umkm.description,
+      images: [ogImage],
+    },
   };
 }
 
@@ -51,16 +85,6 @@ export default async function UMKMDetailPage({ params }: { params: Promise<{ slu
 
   const gmapsDirLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationTarget)}`;
   const gmapsEmbedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(locationTarget)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
-
-  const fallbackImages: Record<string, string> = {
-    Kuliner: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Kerajinan: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Pertanian: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Jasa: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Perdagangan: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    Umum: 'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-  };
 
   const katNama = umkm.kategori?.nama || 'Umum';
   const categoryFallback = fallbackImages[katNama] || fallbackImages['Umum'];
