@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import { umkmData } from "@/data/umkm";
-import UMKMCard from "@/components/UMKMCard/UMKMCard";
+import UMKMCard, { UMKMData } from "@/components/UMKMCard/UMKMCard";
+import { createClient } from "@/lib/supabase/client";
 
 declare global {
   interface Window {
@@ -27,7 +27,23 @@ export default function Home() {
   const whyImgRef = useRef<HTMLImageElement>(null);
   const whySectionRef = useRef<HTMLDivElement>(null);
   
-  const unggulanUMKM = umkmData.filter((u) => u.unggulan).slice(0, 3);
+  const [unggulanUMKM, setUnggulanUMKM] = useState<UMKMData[]>([]);
+
+  useEffect(() => {
+    const fetchUMKM = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("umkm")
+        .select("id, business_name, description, logo_url, nib, kategori(nama), produk(foto), galeri(image)")
+        .eq("status", "APPROVED")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (data && !error) {
+        setUnggulanUMKM(data as any);
+      }
+    };
+    fetchUMKM();
+  }, []);
 
   useEffect(() => {
     // GSAP ScrollTrigger Animations

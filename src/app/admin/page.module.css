@@ -477,6 +477,58 @@
   }
 }
 
+/* ============================
+   CHART STYLES
+   ============================ */
+.chartsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .chartsContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartCard {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.chartTitle {
+  font-family: var(--font-heading), 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.75rem;
+}
+
+.chartWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.emptyChart {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 @media (max-width: 992px) {
   .sidebar {
     display: none;

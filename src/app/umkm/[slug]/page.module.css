@@ -144,8 +144,9 @@
 }
 
 .storyImgCard {
-  border-radius: 32px;
+  border-radius: 24px;
   overflow: hidden;
+  height: 100%;
 }
 
 .storyImg {
@@ -153,6 +154,20 @@
   height: 480px;
   object-fit: cover;
   display: block;
+}
+
+.galleryGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+/* If multiple images, make them form a grid */
+.galleryGrid[data-multiple="true"] {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.galleryGrid[data-multiple="true"] .storyImg {
+  height: 220px;
 }
 
 /* GALLERY SECTION */

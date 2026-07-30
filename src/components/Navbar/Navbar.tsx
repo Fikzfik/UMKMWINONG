@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import styles from "./Navbar.module.css";
 
@@ -16,6 +17,13 @@ export default function Navbar() {
     <header className={styles.header}>
       <nav className={`container ${styles.navContainer}`}>
         <Link href="/" className={styles.logo}>
+          <Image 
+            src="/Logo-Madiun.gif" 
+            alt="Logo Madiun" 
+            width={40} 
+            height={40} 
+            style={{ objectFit: "contain" }}
+          />
           <span className={styles.logoText}>WebDesa</span>
           <span className={styles.logoBadge}>Winong</span>
         </Link>

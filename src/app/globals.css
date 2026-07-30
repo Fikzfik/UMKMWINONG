@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Core Colors from DESIGN.md (Heritage & Growth) */
   --primary: #154212; /* Deep Lush Forest Green */

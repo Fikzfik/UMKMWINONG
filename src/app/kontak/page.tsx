@@ -4,6 +4,7 @@ import { useState } from "react";
 import styles from "./page.module.css";
 import { desaInfo } from "@/data/desa";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
+import { MapPin, Phone, Mail } from "lucide-react";
 
 export default function KontakPage() {
   const [formData, setFormData] = useState({ nama: '', email: '', pesan: '' });
@@ -37,21 +38,21 @@ export default function KontakPage() {
               
               <div className={styles.infoList}>
                 <div className={styles.infoItem}>
-                  <div className={styles.icon}>📍</div>
+                  <div className={styles.icon}><MapPin size={24} color="var(--primary)" /></div>
                   <div>
                     <h4>Alamat Kantor</h4>
                     <p>{desaInfo.kontak.alamat}</p>
                   </div>
                 </div>
                 <div className={styles.infoItem}>
-                  <div className={styles.icon}>📞</div>
+                  <div className={styles.icon}><Phone size={24} color="var(--primary)" /></div>
                   <div>
                     <h4>Telepon</h4>
                     <p>{desaInfo.kontak.telepon}</p>
                   </div>
                 </div>
                 <div className={styles.infoItem}>
-                  <div className={styles.icon}>✉️</div>
+                  <div className={styles.icon}><Mail size={24} color="var(--primary)" /></div>
                   <div>
                     <h4>Email</h4>
                     <p>{desaInfo.kontak.email}</p>

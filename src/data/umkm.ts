@@ -27,7 +27,7 @@ export const umkmData: UMKM[] = [
     alamat: 'Dusun Sukamaju RT 02/RW 01, Desa Winong',
     nib: 'Ada',
     foto: [
-      'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
     unggulan: true,

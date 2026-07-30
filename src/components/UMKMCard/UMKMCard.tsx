@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import styles from './UMKMCard.module.css';
-import { UMKM } from '@/data/umkm';
+
+export interface UMKMData {
+  id: string;
+  business_name: string;
+  description: string;
+  logo_url: string | null;
+  nib: string | null;
+  kategori?: { nama: string };
+}
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
   Kuliner: { bg: 'rgba(45, 90, 39, 0.15)', text: '#154212' },
@@ -12,37 +20,44 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 };
 
 const fallbackImages: Record<string, string> = {
-  '1': 'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  '2': 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  '3': 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  '4': 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  '5': 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  '6': 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Kuliner: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Kerajinan: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Pertanian: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Jasa: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Perdagangan: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  Umum: 'https://images.unsplash.com/photo-1598442879685-6f81e355c3c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
 };
 
-export default function UMKMCard({ umkm }: { umkm: UMKM }) {
-  const imgSrc = (umkm.foto && umkm.foto[0] && !umkm.foto[0].startsWith('/placeholder')) 
-    ? umkm.foto[0] 
-    : (fallbackImages[umkm.id] || fallbackImages['1']);
+export default function UMKMCard({ umkm }: { umkm: UMKMData }) {
+  const katNama = umkm.kategori?.nama || 'Umum';
+  const badgeStyle = categoryColors[katNama] || categoryColors['Kuliner'];
 
-  const badgeStyle = categoryColors[umkm.kategori] || categoryColors['Kuliner'];
+  const productPhoto = umkm.produk && umkm.produk.length > 0 && umkm.produk[0].foto ? umkm.produk[0].foto : null;
+  const galeriPhoto = umkm.galeri && umkm.galeri.length > 0 ? umkm.galeri[0].image : null;
+  const categoryFallback = fallbackImages[katNama] || fallbackImages['Umum'];
+  const coverSrc = productPhoto || galeriPhoto || umkm.logo_url || categoryFallback;
+  const hasSeparateLogo = (productPhoto || galeriPhoto) && umkm.logo_url;
 
   return (
     <div className={`organic-shadow hover-lift ${styles.card}`}>
       <div className={styles.imageWrapper}>
-        <img src={imgSrc} alt={umkm.nama} className={styles.image} />
-        {umkm.unggulan && <span className={styles.unggulanBadge}>⭐ Unggulan</span>}
+        <img src={coverSrc} alt={umkm.business_name} className={styles.image} />
+        {umkm.nib && <span className={styles.nibBadge}>⭐ Terverifikasi</span>}
+        {hasSeparateLogo && (
+          <img src={umkm.logo_url as string} alt="Logo" className={styles.cardLogo} />
+        )}
       </div>
       <div className={styles.body}>
         <span 
           className={styles.categoryBadge} 
           style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
         >
-          {umkm.kategori}
+          {katNama}
         </span>
-        <h3 className={styles.title}>{umkm.nama}</h3>
-        <p className={styles.desc}>{umkm.deskripsi}</p>
-        <Link href={`/umkm/${umkm.slug}`} className={styles.button}>
+        <h3 className={styles.title}>{umkm.business_name}</h3>
+        <p className={styles.desc}>{umkm.description}</p>
+        <Link href={`/umkm/${umkm.id}`} className={styles.button}>
           Kunjungi Toko
         </Link>
       </div>
